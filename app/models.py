@@ -6,7 +6,7 @@ class Actor(models.Model):
     
     name               = models.CharField(max_length=64, db_index=True)
     surname            = models.CharField(max_length=64, db_index=True)
-    date_of_birth      = models.IntegerField()
+    date_of_birth      = models.DateField(max_length=64, db_index=True)
 
     class Meta:
         indexes = [
@@ -14,14 +14,14 @@ class Actor(models.Model):
         ]
         
     def __str__(self):
-        return f"Actor {self.name} {self.surname}"
+        return f" {self.name} {self.surname}"
 
 class Producer(models.Model):
     id                 = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     
     name               = models.CharField(max_length=64, db_index=True)
     surname            = models.CharField(max_length=64, db_index=True)
-    date_of_birth      = models.IntegerField()
+    date_of_birth      = models.DateField(max_length=64, db_index=True)
 
     class Meta:
         indexes = [
@@ -29,7 +29,7 @@ class Producer(models.Model):
         ]
         
     def __str__(self):
-        return f"Producer {self.name} {self.surname}"
+        return f"{self.name} {self.surname}"
     
     
 class Movie(models.Model):
