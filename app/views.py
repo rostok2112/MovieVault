@@ -65,6 +65,10 @@ class CustomRegisterView(FormView):
 
 class CustomLogoutView(LogoutView):
     next_page = reverse_lazy('login')
+    http_method_names = ['get', 'post']
+
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
 
     def dispatch(self, request, *args, **kwargs):
         response = super().dispatch(request, *args, **kwargs)
