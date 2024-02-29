@@ -1,0 +1,19 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'components/navigator/css/style.css' %}">
+
+<div class='navigator-block'>
+    <a class='logo-route' href='{% url 'home' %}'> 
+        <img src="{% static 'img/logo.png' %}" class='logo-img' alt="movie-vault-logo">
+        <span class='logo-text'> MovieVault </span>
+    </a> 
+    {% if request.user.is_superuser %}
+        <a href="{% url 'admin:index' %}"> Admin panel </a>
+        &nbsp;|&nbsp;
+    {% endif%}
+    <a href="{% url 'settings' %}">{{request.user.username | capfirst }} settings </a>
+    &nbsp;|&nbsp;
+    <a href="{% url 'logout' %}"> Log out </a>
+</div>
+
+<script src="{% static 'components/navigator/js/script.js' %}"></script>

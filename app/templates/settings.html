@@ -1,0 +1,28 @@
+{% extends 'base_with_navigator.html' %}
+{% load static %}
+
+
+{% block title_head %}
+    Settings
+{% endblock%}
+
+
+{% block additional_tags_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/base_form.css' %}">
+{% endblock %}
+
+{% block content_body %}
+{{ block.super }}
+    <div class="form-wrapper">
+        <h2>Edit Profile</h2>
+        <form method="post" action="{% url 'settings' %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class='form-buttons-block'>
+                <button type="submit">Save</button>
+                <a href="{% url 'home' %}"><button type="button">Cancel</button></a>
+            </div>
+        </form>
+    </div>
+{% endblock %}

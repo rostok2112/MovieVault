@@ -1,0 +1,27 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django = "*"
+python-environ = "*"
+dj-database-url = "*"
+psycopg2-binary = "*"
+tzdata = "*"
+whitenoise = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.11"
+
+[scripts]
+inventory      = "docker compose -f inventory-compose.yml up -d"
+shell          = "python manage.py shell"
+serve          = "python manage.py runserver"
+migrate        = "python manage.py migrate"
+makemigrations = "python manage.py makemigrations"
+collectstatic  = "python manage.py collectstatic"
+migrations     = "python auxillary_scripts/migrations.py"
+sync           = "python auxillary_scripts/sync.py"

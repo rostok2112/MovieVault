@@ -1,0 +1,67 @@
+{% extends 'base_with_navigator.html' %}
+{% load static %}
+{% load custom_tags %}
+
+{% block title_head %}
+    Home
+{% endblock%}
+
+{% block additional_tags_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'home/css/style.css' %}">
+{% endblock %}
+
+{% block content_body %}
+    {{ block.super }}
+
+    <div class="loader-overlay">
+        <div class="loader"></div>
+    </div>
+
+    <div class='table-wrapper'>
+        {% if not movies %}
+            <span> No any movie added </span>
+        {% endif %}
+            <p class='add-movie-link'><a href={% url 'movie_add' %}>Add new movie</a></p>
+        {% comment %} {% if movies %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Some value 1</th>
+                        <th>Some value 2</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for movie in movies %}
+                        <tr>
+                            <td><a href="{% url 'movie_edit' movie.id %}">{{ movie.name }}</a></td>
+                            <td><a href="{{movie.url}}">{{ movie.url}}</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="pagination">
+                <span class="step-links">
+                    {% if page_obj.has_previous %}
+                        <a href="?page=1">&laquo; first</a>
+                        <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                    {% endif %}
+
+                    <span class="current">
+                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                    </span>
+
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}">next</a>
+                        <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                    {% endif %}
+                </span>
+            </div>
+
+        {% endif %} {% endcomment %}
+    </div>
+{% endblock%}
+
+{% block additional_tags_body %}
+    <script src="{% static 'home/js/script.js' %}"></script>
+{% endblock %}
