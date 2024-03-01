@@ -1,12 +1,15 @@
+import requests
+import json
+import random
 
+from datetime import datetime
 
-# from django.shortcuts import get_object_or_404, redirect
-# from django.http import Http404, HttpResponse
+import validators
 from django.contrib.auth import (
     login as login_,
 )
 from django.contrib import messages
-from django.db.models.query import QuerySet
+from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.views.generic import View, ListView
 from django.views.generic.edit import FormView
@@ -18,7 +21,11 @@ from django.contrib.auth.forms import UserCreationForm
 from app.forms import  CustomUserChangeForm
 from app.mixins import CustomLoginRequiredMixin
 
-# from app.models import Movie
+from app.models import (
+    Movie,
+    Actor,
+    Director
+)
 
 
 
@@ -94,3 +101,110 @@ class SettingsView(CustomLoginRequiredMixin, FormView):
         kwargs['instance'] = self.request.user
         return kwargs
 
+
+def str2bool(str_: str) -> bool:
+    """
+    Convert a string to a boolean value by parsing it to lower case and using the json.loads function.
+    
+    :param str_: The input string to be converted to a boolean.
+    :return: The boolean value parsed from the input string.
+    """
+    return  json.loads(str_.lower())
+
+def fill_data(request):
+    MAX_PAGE_TMDB = 500
+    
+    req_data = {
+        'url': 'https://api.themoviedb.org/3/movie/popular?language=en-US',
+        'params': {
+            'api_key': 'fb46b560646ce1f5e142a20396274fc3',
+            'page': random.randint(1, MAX_PAGE_TMDB)
+        }
+    }
+    
+
+    data_tmdb = requests.get(**req_data).json()
+     
+    req_data = {
+        'url': 'http://www.omdbapi.com/',
+        'params': {
+            'apikey': '7d700d6d',
+            'r': 'json',
+        }
+    }
+
+    for movie_tmdb in data_tmdb['results']: 
+        req_data['params']['t'] = movie_tmdb.get('title') # title like a search query
+
+        movie_omdb = requests.get(**req_data).json()
+        if str2bool(movie_omdb.get('Response', 'false')): # if has response
+            naming_fields = ['name', 'surname']
+
+            director_naming = dict(
+                zip(
+                    naming_fields, 
+                    movie_omdb.get('Director').split(maxsplit=1)
+                )
+            )
+            director, created = Director.objects.get_or_create(
+                defaults={
+                    'date_of_birth': None,
+                    **director_naming
+                },
+                **director_naming,
+            )
+            
+            actors = []
+            for actor_naming in movie_omdb.get('Actors').split(', '):
+                actor_naming = dict(
+                    zip(
+                        naming_fields, 
+                        actor_naming.split(maxsplit=1)
+                    )
+                )
+                
+                actor, created = Actor.objects.get_or_create(
+                    defaults={
+                        'date_of_birth': None,
+                        **actor_naming
+                    },
+                    **actor_naming,
+                )
+                
+                actors.append(actor)
+            try:
+                movie_release_date = datetime.strptime(movie_omdb.get('Released'), '%d %b %Y')
+            except:
+                movie_release_date = datetime.strptime(movie_omdb.get('Year'), "%Y")
+            
+            logo_url = movie_omdb.get('Poster')
+            
+            if not validators.url(logo_url): # not valid url
+                logo_url = None
+                
+            movie_info = {
+                'title': movie_omdb.get('Title'),
+                'release_date': movie_release_date,
+                'director': director,
+            }
+
+            movie, created = Movie.objects.get_or_create(
+                defaults={
+                    'logo_url': logo_url,
+                    **movie_info
+                },
+                actors__in = actors,
+                **movie_info
+            )
+            if created:
+                movie.actors.set(actors)
+
+
+    return HttpResponse("Data filled from OMDB API")
+
+def delete_data(request):
+    Director.objects.all().delete()
+    Actor.objects.all().delete()
+    Movie.objects.all().delete()
+    
+    return HttpResponse("Movies data totally removed")

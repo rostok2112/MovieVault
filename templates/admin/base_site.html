@@ -1,0 +1,48 @@
+{% extends "admin/base_site.html" %}
+
+{% load static %}
+
+{% block extrahead %}
+    <script src="{% static "js/utils/loader.js" %}"></script>
+    <script src="{% static "js/utils/fetchData.js" %}"></script>
+{% endblock %}
+
+{% block extrastyle %}
+<style>
+    #header-extra-buttons {
+        flex-grow: 1;
+        display: flex;
+        justify-content: end;
+        gap: 10px;
+    }
+
+    .extra-button {
+        display: inline-block;
+        padding: 6px 10px;
+        font-size: 14px;
+        cursor: pointer;
+        border: 1px solid #917c0a7;
+        border-radius: 4px;
+        background-color: #f5dd5d;
+      }
+      
+      .extra-button:hover {
+        background-color: #ebebeb;
+      }
+</style>
+{% endblock %}
+
+
+{% block branding %}
+    <div id='site-name'>  
+        <a href="/admin/">MovieVault administration</a>
+    </div>
+{% endblock %}
+
+{% block usertools  %}
+    <div id="header-extra-buttons">
+        <button class="extra-button" onclick="fetchData('/api/v1/admin/fill_data')">Fill data</button>
+        <button class="extra-button" onclick="fetchData('/api/v1/admin/delete_data')">Delete data</button>
+    </div>
+    {{ block.super }}
+{% endblock %}

@@ -10,6 +10,9 @@ dj-database-url = "*"
 psycopg2-binary = "*"
 tzdata = "*"
 whitenoise = "*"
+requests = "*"
+pillow = "*"
+validators = "*"
 
 [dev-packages]
 
