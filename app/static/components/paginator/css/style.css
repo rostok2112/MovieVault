@@ -1,0 +1,14 @@
+.pagination {
+    display: flex;
+    justify-content: center;
+    background-color: lightcyan;
+    border: 1px solid cyan;
+    padding: 15px 20px;
+}
+.pagination a {
+    text-decoration: none;
+    margin: 5px;
+    padding: 10px;
+    border: 1px solid cyan;
+    border-radius: 5px;
+}

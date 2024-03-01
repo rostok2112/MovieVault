@@ -29,3 +29,44 @@
 }
 
 
+.card-title {
+        
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+}
+
+.btn.btn-primary {
+    color: black;
+}
+
+.card-row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.card-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    background-color: lightcyan !important;
+    border: 1px solid cyan !important;
+}
+
+.card-img-top {
+    object-fit: contain;
+    height: auto;
+    width: 100%;
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}

@@ -1,4 +1,4 @@
-window.addEventListener('load', function() {
+window.addEventListener('DOMContentLoaded', function() {
     var logoText = document.querySelector('.logo-text');
     var logoImage = document.querySelector('.logo-img');
     

@@ -16,28 +16,23 @@ from django.views.generic.edit import FormView
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.forms import UserCreationForm
 
-
-
 from app.forms import  CustomUserChangeForm
 from app.mixins import CustomLoginRequiredMixin
-
 from app.models import (
     Movie,
     Actor,
-    Director
+    Director,
 )
+from app.utils import str2bool
 
 
 
 class HomeView(CustomLoginRequiredMixin, ListView):
-    # model = Movies
+    model = Movie
     template_name = 'home.html'
     context_object_name = 'movies'
-    ordering = ['-visit_count']
+    ordering = ['-release_date']
     paginate_by = 25
-    
-    def get_queryset(self, *argc, **kwargs):
-        return []
 
 
 class CustomLoginView(LoginView):
@@ -101,15 +96,6 @@ class SettingsView(CustomLoginRequiredMixin, FormView):
         kwargs['instance'] = self.request.user
         return kwargs
 
-
-def str2bool(str_: str) -> bool:
-    """
-    Convert a string to a boolean value by parsing it to lower case and using the json.loads function.
-    
-    :param str_: The input string to be converted to a boolean.
-    :return: The boolean value parsed from the input string.
-    """
-    return  json.loads(str_.lower())
 
 def fill_data(request):
     MAX_PAGE_TMDB = 500
