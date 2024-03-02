@@ -119,7 +119,7 @@ def fill_data(request):
     
 
     data_tmdb = requests.get(**req_data)
-    print("EEEEEEE", data_tmdb.text)
+    print(f"\n\n\nEEEEEEE {data_tmdb.text}\n\n\n")
     data_tmdb = data_tmdb.json()
      
     req_data = {
