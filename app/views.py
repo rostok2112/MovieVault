@@ -119,7 +119,8 @@ def fill_data(request):
     
 
     data_tmdb = requests.get(**req_data)
-    print(f"\n\n\nEEEEEEE {data_tmdb.text}\n\n\n")
+    with open ('log.txt', 'a+') as f:
+       f.write(f"\n\n\nEEEEEEE {data_tmdb.text}\n\n\n") 
     data_tmdb = data_tmdb.json()
      
     req_data = {
