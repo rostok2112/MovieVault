@@ -1,0 +1,41 @@
+{% extends 'base_with_navigator.html' %}
+{% load static %}
+{% load custom_tags %}
+
+{% block title_head %}
+    Actors list
+{% endblock%}
+
+{% block additional_tags_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'home/css/style.css' %}">
+
+{% endblock %}
+
+{% block content_body %}
+    {{ block.super }}
+    
+    <div class='table-wrapper'>
+        <p class='action-links-container'>
+            {% if request.user.is_superuser %}
+                <span class='action-link'><a href={% url 'actor_add' %}>Add new actor</a></span>
+            {% endif%}
+        </p>
+        {% include 'components/filter_picker.html' %}
+        {% if not actors %}
+            <span> No any actor added </span>
+        {% endif %}
+        
+        {% if actors %}
+            <ul>
+                {% for actor in actors%}
+                <li><a href={% url 'actor_edit' actor.id %}>{{actor.name}} {{actor.surname}}</a></li>
+                {% endfor %}
+            </ul>
+            {% include "components/paginator.html" %}
+            <div class="spacer">&nbsp;</div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock%}
+

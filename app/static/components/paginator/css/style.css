@@ -3,10 +3,14 @@
     justify-content: center;
     background-color: lightcyan;
     border: 1px solid cyan;
+    box-shadow: 0 0 10px 5px rgba(146, 141, 141, 0.8);
     padding: 15px 20px;
+    border-radius: 5px;
 }
 .pagination a {
     text-decoration: none;
+    background-color: aliceblue;
+    
     margin: 5px;
     padding: 10px;
     border: 1px solid cyan;

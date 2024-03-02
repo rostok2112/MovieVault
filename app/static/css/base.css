@@ -1,9 +1,9 @@
 body {
-    background-color: lightgray;
+    background-color: lightgray !important;
 }
 
 ul.messagelist {
-    position:absolute;
+    position: fixed;
     bottom: 0;
     box-sizing: border-box;
     left: 0;
@@ -19,4 +19,17 @@ ul.messagelist li {
 
 ul.errorlist li{
     background: rgb(146, 141, 141);
+}
+
+.action-link {
+    text-align: end;
+    font-weight: bold;
+
+    text-decoration: none;
+    background-color: aliceblue;
+    
+    margin: 5px;
+    padding: 10px;
+    border: 1px solid cyan;
+    border-radius: 5px;
 }

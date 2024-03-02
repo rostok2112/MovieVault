@@ -1,0 +1,44 @@
+#filters-widget-wrapper {
+    display: flex;
+    justify-content: end;
+    width: 100%;
+}
+
+#filters-widget {
+    display: flex;
+    justify-content: end;
+    gap: 15px;
+
+    margin: 10px 0 10px 0;
+    padding: 10px;
+    
+
+    background-color: lightcyan;
+    border: 1px solid cyan;
+    box-shadow: 0 0 10px 5px rgba(146, 141, 141, 0.8);
+    align-items: center; 
+    width: fit-content;
+    border-radius: 5px;
+
+}
+#filter-form {
+    display: inline;
+}
+
+#filters-widget button,
+#filters-widget input,
+#filters-widget select,
+#filters-widget textarea {
+    margin: 5px;
+    padding: 10px;
+    border: 1px solid cyan;
+    background-color: aliceblue;
+    border-radius: 5px;
+
+}
+
+#filters-widget select {
+    background-color: unset;
+    padding: unset;
+}
+

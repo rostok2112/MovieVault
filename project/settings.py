@@ -14,9 +14,10 @@ env = environ.Env(
 )
 
 DEBUG = env.bool('DEBUG', False)
-IS_LOG_FILE = env.bool('IS_LOG_FILE', False)
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = env.str('SECRET_KEY', '')
+TMDB_API_KEY = env.str('TMDB_API_KEY', '')
+OMDB_API_KEY = env.str('OMDB_API_KEY', '')
 
 DATABASE_URL = env.str('DATABASE_URL', '')
 
@@ -63,6 +64,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'whitenoise.runserver_nostatic',
+    'django_filters',
     'app',
 ]
 

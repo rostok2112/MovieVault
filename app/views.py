@@ -1,3 +1,6 @@
+from django.conf import settings
+from django.db.models.query import QuerySet
+from django.shortcuts import get_object_or_404, redirect
 import requests
 import json
 import random
@@ -11,13 +14,24 @@ from django.contrib.auth import (
 from django.contrib import messages
 from django.http import HttpResponse
 from django.urls import reverse_lazy
-from django.views.generic import View, ListView
+from django_filters.views import FilterView
+from django.views.generic import View
 from django.views.generic.edit import FormView
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.forms import UserCreationForm
+from app.filters import (
+    ActorFilter,
+    DirectorFilter, 
+    MovieFilter,
+)
 
-from app.forms import  CustomUserChangeForm
-from app.mixins import CustomLoginRequiredMixin
+from app.forms import  (
+    ActorForm, 
+    CustomUserChangeForm, 
+    DirectorForm, 
+    MovieForm,
+)
+from app.mixins import CustomLoginRequiredMixin, RegularUserReadOnlyFormMixin, SuperuserPermissionsOnlyMixin
 from app.models import (
     Movie,
     Actor,
@@ -26,17 +40,8 @@ from app.models import (
 from app.utils import str2bool
 
 
-
-class HomeView(CustomLoginRequiredMixin, ListView):
-    model = Movie
-    template_name = 'home.html'
-    context_object_name = 'movies'
-    ordering = ['-release_date']
-    paginate_by = 25
-
-
 class CustomLoginView(LoginView):
-    template_name = 'login.html'
+    template_name = 'forms/login.html'
     success_message = 'Hello, %(username)s!'
 
     def form_valid(self, form):
@@ -51,7 +56,7 @@ class CustomLoginView(LoginView):
         return reverse_lazy('home')
 
 class CustomRegisterView(FormView):
-    template_name = 'register.html'
+    template_name = 'forms/register.html'
     form_class = UserCreationForm
     success_url = reverse_lazy('home')
 
@@ -78,7 +83,7 @@ class CustomLogoutView(LogoutView):
         return response
 
 class SettingsView(CustomLoginRequiredMixin, FormView):
-    template_name = 'settings.html'
+    template_name = 'forms/settings.html'
     form_class = CustomUserChangeForm
     success_url = reverse_lazy('settings')
 
@@ -98,12 +103,16 @@ class SettingsView(CustomLoginRequiredMixin, FormView):
 
 
 def fill_data(request):
+    if not request.user.is_superuser:
+        messages.error(request, "You haven't permissions for that!")
+        return redirect(reverse_lazy('home'))
+    
     MAX_PAGE_TMDB = 500
     
     req_data = {
         'url': 'https://api.themoviedb.org/3/movie/popular?language=en-US',
         'params': {
-            'api_key': 'fb46b560646ce1f5e142a20396274fc3',
+            'api_key': settings.TMDB_API_KEY,
             'page': random.randint(1, MAX_PAGE_TMDB)
         }
     }
@@ -114,7 +123,7 @@ def fill_data(request):
     req_data = {
         'url': 'http://www.omdbapi.com/',
         'params': {
-            'apikey': '7d700d6d',
+            'apikey': settings.OMDB_API_KEY,
             'r': 'json',
         }
     }
@@ -189,8 +198,146 @@ def fill_data(request):
     return HttpResponse("Data filled from OMDB API")
 
 def delete_data(request):
+    if not request.user.is_superuser:
+        messages.error(request, "You haven't permissions for that!")
+        return redirect(reverse_lazy('home'))
     Director.objects.all().delete()
     Actor.objects.all().delete()
     Movie.objects.all().delete()
     
     return HttpResponse("Movies data totally removed")
+
+class ActorsListView(CustomLoginRequiredMixin, FilterView):
+    model = Actor
+    filterset_class = ActorFilter
+    template_name = 'actors_list.html'
+    context_object_name = 'actors'
+    paginate_by = 25
+    
+class ActorAddView(CustomLoginRequiredMixin, SuperuserPermissionsOnlyMixin, FormView):
+    template_name = 'forms/actor.html'
+    form_class = ActorForm
+    success_url = reverse_lazy('actors_list')
+    
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, "You are successfully added a new actor!")
+        return super().form_valid(form)   
+     
+class ActorEditView(CustomLoginRequiredMixin, RegularUserReadOnlyFormMixin, FormView):
+    template_name = 'forms/actor.html'
+    form_class = ActorForm
+    success_url = reverse_lazy('actors_list')
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['instance'] = get_object_or_404(Actor, pk=self.kwargs['id'])
+
+        return kwargs
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['editing'] = True
+        return context
+    
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, f"You are successfully edited actor '{form.instance}'!")
+        return super().form_valid(form)
+
+
+class ActorDeleteView(CustomLoginRequiredMixin, SuperuserPermissionsOnlyMixin, View):
+    def get(self, request, id):
+        actor = get_object_or_404(Actor, pk=id)
+        actor.delete()
+        messages.success(request, f"You have successfully deleted actor '{actor}' !")
+        return redirect('actors_list')
+
+class DirectorsListView(CustomLoginRequiredMixin, FilterView):
+    model = Director
+    filterset_class = DirectorFilter
+    template_name = 'directors_list.html'
+    context_object_name = 'directors'
+    paginate_by = 25
+
+class DirectorAddView(CustomLoginRequiredMixin, SuperuserPermissionsOnlyMixin, FormView):
+    template_name = 'forms/director.html'
+    form_class = DirectorForm
+    success_url = reverse_lazy('directors_list')
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, "You are successfully added a new director!")
+        return super().form_valid(form)   
+     
+class DirectorEditView(CustomLoginRequiredMixin, RegularUserReadOnlyFormMixin, FormView):
+    template_name = 'forms/director.html'
+    form_class = DirectorForm
+    success_url = reverse_lazy('directors_list')
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['instance'] = get_object_or_404(Director, pk=self.kwargs['id'])
+        
+        return kwargs
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['editing'] = True
+        
+        return context
+    
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, f"You are successfully edited director '{form.instance}'!")
+        return super().form_valid(form)
+
+class DirectorDeleteView(CustomLoginRequiredMixin, SuperuserPermissionsOnlyMixin, View):
+    def get(self, request, id):
+        director = get_object_or_404(Director, pk=id)
+        director.delete()
+        messages.success(request, f"You have successfully deleted director '{director}' !")
+        return redirect('directors_list')
+
+class HomeView(CustomLoginRequiredMixin, FilterView):
+    model = Movie
+    template_name = 'home.html'
+    context_object_name = 'movies'
+    filterset_class = MovieFilter
+    ordering = ['-release_date']
+    paginate_by = 25
+
+class MovieAddView(CustomLoginRequiredMixin, SuperuserPermissionsOnlyMixin, FormView):
+    template_name = 'forms/movie.html'
+    form_class = MovieForm
+    success_url = reverse_lazy('home')
+    
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, "You are successfully added a new movie!")
+        return super().form_valid(form)
+
+class MovieEditView(CustomLoginRequiredMixin, RegularUserReadOnlyFormMixin, FormView):
+    template_name = 'forms/movie.html'
+    form_class = MovieForm
+    success_url = reverse_lazy('home')
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['instance'] = get_object_or_404(Movie, pk=self.kwargs['id'])
+
+        return kwargs
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['editing'] = True
+        return context
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, f"You are successfully edited movie '{form.instance}'!")
+        return super().form_valid(form)
+    
+class MovieDeleteView(CustomLoginRequiredMixin, SuperuserPermissionsOnlyMixin, View):
+    def get(self, request, id):
+        movie = get_object_or_404(Movie, pk=id)
+        movie.delete()
+        messages.success(request, f"You have successfully deleted movie '{movie}' !")
+        return redirect('home')

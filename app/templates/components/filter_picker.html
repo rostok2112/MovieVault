@@ -1,0 +1,15 @@
+{% load static %}
+
+<link rel="stylesheet"  href="{% static "components/filter_picker/css/style.css" %}">
+
+<div id='filters-widget-wrapper'>
+    <div id='filters-widget'>
+        <form id="filter-form" method="get">
+            {{ filter.form.as_p }}
+            <button type="submit">Filter</button>
+        </form>
+        <button type="button" onclick="resetFilters()">Remove filters</button>
+    </div>
+</div>
+
+<script src="{% static "components/filter_picker/js/script.js" %}"></script>

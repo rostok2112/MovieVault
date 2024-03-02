@@ -13,6 +13,8 @@ whitenoise = "*"
 requests = "*"
 pillow = "*"
 validators = "*"
+django-filter = "*"
+python-dateutil = "*"
 
 [dev-packages]
 

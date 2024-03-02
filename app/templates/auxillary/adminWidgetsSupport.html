@@ -1,0 +1,12 @@
+<script>
+    //  Defining some functions that necessary for 
+    //  internationalization module that will be imported by 
+    //  filter.form.media below
+    //  That functions is defined in another js script that must be provided in urlconf
+    function pgettext () {}
+    function gettext () {}
+    function get_format () {}
+    function gettext_noop  () {}
+</script>
+{% comment %} include necessary scripts for django admin widgets {% endcomment %}
+{{ filter.form.media }}

@@ -16,13 +16,26 @@
     {{ block.super }}
     
     <div class='table-wrapper'>
+        <p class="action-links-container">
+
+            {% if request.user.is_superuser %}
+                <span class='action-link'><a href={% url 'movie_add' %}>Add new movie</a></span>
+                &nbsp;|&nbsp;
+            {% endif%}
+            <span class='action-link'><a href={% url 'directors_list' %}>Show Directors list</a></span>
+            &nbsp;|&nbsp;
+            <span class='action-link'><a href={% url 'actors_list' %}>Show Actors list</a></span>
+        </p>
+        <div class="container">
+        {% include 'components/filter_picker.html' %}
         {% if not movies %}
             <span> No any movie added </span>
         {% endif %}
-        <p class='add-movie-link'><a href={% url 'movie_add' %}>Add new movie</a></p>
+        
         {% if  movies %}
-            <div class="container">
+            
                 {% include "components/paginator.html" %}
+
                 <div class="card-row row mt-4">
                     {% for movie in movies %}
                     <div class="col-lg-3 col-md-3 col-sm-6 col-12 mb-4 card-wrapper">
@@ -39,8 +52,9 @@
                 </div>
                 {% include "components/paginator.html" %}
                 <div class="spacer">&nbsp;</div>
-            </div>
+           
         {% endif %}
+        </div>
     </div>
 {% endblock%}
 

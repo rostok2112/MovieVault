@@ -1,0 +1,31 @@
+{% extends 'base_with_navigator.html' %}
+{% load static %}
+
+{% block title_head %}
+    {% if editing %}Edit {{model_name|title}} - {{form.instance.name}} {% else %}Add New {{model_name|title}}{% endif %} 
+{% endblock%}
+
+{% block additional_tags_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/base_form.css' %}">
+{% endblock %}
+
+{% block content_body %}
+    {{ block.super }}
+    <div class="form-wrapper">
+        <h2>{% if editing %}Edit {{model_name|title}}{% else %}Add New {{model_name|title}}{% endif %}</h2>
+        <form method="post" action="{% if editing %}{% url model_name|add:'_edit' form.instance.id %}{% else %}{% url model_name|add:'_add' %}{% endif %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class='form-buttons-block'>
+                {% if not read_only %}
+                    <button type="submit">Save</button>
+                    {% if editing %}
+                        <a href="{% url model_name|add:'_delete' id=form.instance.id %}"><button type="button">Delete</button></a>
+                    {% endif %}
+                {% endif %}
+                <a href="javascript:history.back()"><button type="button">Return</button></a>
+            </div>
+        </form>
+    </div>
+{% endblock %}

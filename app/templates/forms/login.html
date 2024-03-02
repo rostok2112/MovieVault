@@ -2,7 +2,7 @@
 {% load custom_tags %}
 {% load static %}
 
-{% xextends 'base_auth.html' with auth_action_name='Login' auth_form_action='login' %}
+{% xextends 'forms/base_auth.html' with auth_action_name='Login' auth_form_action='login' %}
 
 {% block after_form_paragraph %}  
     No account? <a href="{% url 'register' %}">Register here</a>.
