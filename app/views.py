@@ -118,7 +118,9 @@ def fill_data(request):
     }
     
 
-    data_tmdb = requests.get(**req_data).json()
+    data_tmdb = requests.get(**req_data)
+    print("EEEEEEE", data_tmdb.text())
+    data_tmdb = data_tmdb.json()
      
     req_data = {
         'url': 'http://www.omdbapi.com/',
@@ -127,8 +129,9 @@ def fill_data(request):
             'r': 'json',
         }
     }
+    
 
-    for movie_tmdb in data_tmdb['results']: 
+    for movie_tmdb in data_tmdb.get('results'): 
         req_data['params']['t'] = movie_tmdb.get('title') # title like a search query
 
         movie_omdb = requests.get(**req_data).json()
